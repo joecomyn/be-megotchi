@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, UsePi
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/User.dto";
 import { UpdateUserDto } from "./dto/UpdateUser.dto";
+import { UpdateMegotchiDto } from "./dto/UpdateMegotchi.dto";
 import  mongoose  from "mongoose";
 
 @Controller('users')
@@ -40,11 +41,21 @@ async updateUser(@Param('id') id: string,@Body() updateUserDto: UpdateUserDto){
 
 @Delete(':id')
 async deleteUser(@Param('id') id: string){
-    const isValid = mongoose.Types.ObjectId.isValid(id)
+    const isValid = mongoose.Types.ObjectId.isValid(id);
     if (!isValid) throw new HttpException('Invalid ID', 400);
-    const deletedUser = await this.userService.deleteUser(id)
+    const deletedUser = await this.userService.deleteUser(id);
     if (!deletedUser) throw new HttpException('User not found', 404) 
     return;
+}
+
+@Patch(':id/megotchi')
+@UsePipes(new ValidationPipe())
+async updateUserMegotchi(@Param('id') id: string, @Body() updateMegotchiDto: UpdateMegotchiDto){
+    const isValid = mongoose.Types.ObjectId.isValid(id);
+    if (!isValid) throw new HttpException('Invalid ID', 400);
+    const updateMegotchi = await this.userService.updateUserMegotchi(id, updateMegotchiDto)
+    if(!updateMegotchi) throw new HttpException('Megotchi Not Found', 404)
+    return updateMegotchi;
 }
 
 }
