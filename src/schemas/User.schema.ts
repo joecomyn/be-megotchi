@@ -1,18 +1,22 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from 'mongoose';
 import { UserSettings } from "./UserSettings.schema";
+import { Megotchi } from "./Megotchi.schema";
 
 @Schema({versionKey: false})
 export class User {
-    @Prop({unique: true, required: true})
-    username: string;
+    @Prop({ required: true})
+    displayName: string;
 
-    @Prop({required: false})
-    displayName?: string;
+    @Prop({required: true})
+    email: string;
 
-    @Prop({required: false})
-    avatarUrl?: string;
+    @Prop({required: true})
+    password: string;
     
+    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Megotchi' })
+    megotchi: Megotchi;
+
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UserSettings' })
     settings?: UserSettings;
 }
