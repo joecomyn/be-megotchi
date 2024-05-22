@@ -29,14 +29,16 @@ export class UsersService {
                 megotchi: savedNewMegotchi._id,
                 settings: savedNewSettings._id,
             });
-            return newUser.save();
+            await newUser.save();
+            return newUser.populate([{ path: 'settings'}, { path: 'megotchi'}]);
         }
 
         const newUser = new this.userModel({
             ...createUserDto,
             megotchi: savedNewMegotchi._id,
         });
-        return newUser.save();
+        await newUser.save();
+        return newUser.populate({ path: 'megotchi'});
     }
 
     getUsers(){
