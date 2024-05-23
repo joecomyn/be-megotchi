@@ -29,16 +29,37 @@ export class UsersService {
                 megotchi: savedNewMegotchi._id,
                 settings: savedNewSettings._id,
             });
-            await newUser.save();
-            return newUser.populate([{ path: 'settings'}, { path: 'megotchi'}]);
+            try {
+                await newUser.save();
+            } catch (error) {
+                this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
+                return error;
+            }
+            const returnUser = await newUser.populate([{ path: 'settings'}, { path: 'megotchi'}]);
+            return {
+                displayName: returnUser.displayName,
+                _id: returnUser._id,
+                megotchi:returnUser.megotchi,
+                settings: returnUser.settings
+            }
         }
 
         const newUser = new this.userModel({
             ...createUserDto,
             megotchi: savedNewMegotchi._id,
         });
-        await newUser.save();
-        return newUser.populate({ path: 'megotchi'});
+        try {
+            await newUser.save();
+        } catch (error) {
+            this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
+            return error;
+        }
+        const returnUser = await newUser.populate({ path: 'megotchi'});
+        return {
+            displayName: returnUser.displayName,
+            _id: returnUser._id,
+            megotchi:returnUser.megotchi
+        }
     }
 
     getUsers(){
@@ -62,4 +83,6 @@ export class UsersService {
         const megotchiId = user.megotchi.toString()
         return this.megotchiModel.findByIdAndUpdate(megotchiId, updateMegotchiDto, {new: true})
     }
+
+
 }

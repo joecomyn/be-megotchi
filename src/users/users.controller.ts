@@ -20,6 +20,25 @@ getUsers(){
     return this.userService.getUsers()
 }
 
+@Post('/signin')
+async signInUser(@Body() userCredentials: { email: string, password: string}){
+    const users = await this.userService.getUsers()
+    const foundUser = users.filter((user) => user.email === userCredentials.email && user.password === userCredentials.password)
+
+    if(foundUser.length > 0){
+
+        const returnUser = {
+            displayName: foundUser[0].displayName,
+            _id: foundUser[0]._id,
+            megotchi: foundUser[0].megotchi
+        }
+        return returnUser;
+    }
+    else{
+        throw new HttpException('User Not Found', 404)
+    }
+}
+
 @Get(':id')
  async getUserById(@Param('id') id: string){
     const isValid = mongoose.Types.ObjectId.isValid(id)
@@ -42,7 +61,7 @@ async updateUser(@Param('id') id: string,@Body() updateUserDto: UpdateUserDto){
 @Delete(':id')
 async deleteUser(@Param('id') id: string){
     const isValid = mongoose.Types.ObjectId.isValid(id);
-    if (!isValid) throw new HttpException('Invalid ID', 400);
+    if (!isValid) throw new HttpException('Invalid ID', 400);this.userService.getUsers()
     const deletedUser = await this.userService.deleteUser(id);
     if (!deletedUser) throw new HttpException('User not found', 404) 
     return;
@@ -57,5 +76,6 @@ async updateUserMegotchi(@Param('id') id: string, @Body() updateMegotchiDto: Upd
     if(!updateMegotchi) throw new HttpException('Megotchi Not Found', 404)
     return updateMegotchi;
 }
+
 
 }
