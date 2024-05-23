@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 import { UserSettings } from "./UserSettings.schema";
 import { Megotchi } from "./Megotchi.schema";
 
-@Schema({versionKey: false})
+@Schema({versionKey: false, validateBeforeSave: true})
 export class User {
     @Prop({ required: true})
     displayName: string;
 
-    @Prop({required: true})
+    @Prop({ unique: true, required: true})
     email: string;
 
     @Prop({required: true})
