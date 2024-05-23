@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from 'mongoose';
 import { UserSettings } from "./UserSettings.schema";
 import { Megotchi } from "./Megotchi.schema";
+import { Task, TaskSchema } from "./Task.schema";
 
 @Schema({versionKey: false, validateBeforeSave: true})
 export class User {
@@ -16,6 +17,12 @@ export class User {
     
     @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Megotchi' })
     megotchi: Megotchi;
+
+    @Prop({ required: true, type: [TaskSchema]})
+    tasklist: Task[];
+
+    @Prop({ required: true })
+    balance: number;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UserSettings' })
     settings?: UserSettings;
