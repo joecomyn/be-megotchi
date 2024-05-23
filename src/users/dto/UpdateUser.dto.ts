@@ -1,6 +1,5 @@
-import { IsObject, IsOptional, IsString } from "class-validator";
-import { UpdateMegotchiDto } from "./UpdateMegotchi.dto";
-
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { Type } from 'class-transformer';
 export class UpdateUserDto{
     
     @IsOptional()
@@ -11,4 +10,7 @@ export class UpdateUserDto{
     @IsString()
     avatarUrl?: string;
 
+    @IsOptional()
+    @IsNumber()
+    balance?: number;
 }

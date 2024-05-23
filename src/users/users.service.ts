@@ -7,6 +7,7 @@ import { UpdateUserDto } from "./dto/UpdateUser.dto";
 import { UserSettings } from "src/schemas/UserSettings.schema";
 import { Megotchi } from "src/schemas/Megotchi.schema";
 import { UpdateMegotchiDto } from "./dto/UpdateMegotchi.dto";
+import { UpdateUserTasksDto } from "./dto/UpdateUserTasks.dto";
 
 @Injectable()
 export class UsersService {
@@ -24,41 +25,52 @@ export class UsersService {
         if(settings) {
             const newSettings = new this.userSettingsModel(settings);
             const savedNewSettings = await newSettings.save();
+
             const newUser = new this.userModel({
                 ...createUserDto,
                 megotchi: savedNewMegotchi._id,
+                tasklist: [],
+                balance: 0,
                 settings: savedNewSettings._id,
             });
+            
             try {
-                await newUser.save();
+                await newUser.save() 
             } catch (error) {
-                this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
+                await this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
                 return error;
             }
+            
             const returnUser = await newUser.populate([{ path: 'settings'}, { path: 'megotchi'}]);
             return {
                 displayName: returnUser.displayName,
                 _id: returnUser._id,
-                megotchi:returnUser.megotchi,
-                settings: returnUser.settings
+                megotchi: returnUser.megotchi,
+                tasklist: returnUser.tasklist,
+                balance: returnUser.balance,
+                settings: returnUser.settings,
             }
         }
 
         const newUser = new this.userModel({
             ...createUserDto,
             megotchi: savedNewMegotchi._id,
+            taskList: [],
+            balance: 0,
         });
         try {
-            await newUser.save();
+            await newUser.save() 
         } catch (error) {
-            this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
+            await this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
             return error;
         }
         const returnUser = await newUser.populate({ path: 'megotchi'});
         return {
             displayName: returnUser.displayName,
             _id: returnUser._id,
-            megotchi:returnUser.megotchi
+            megotchi:returnUser.megotchi,
+            tasklist: returnUser.tasklist,
+            balance: returnUser.balance,
         }
     }
 
@@ -70,7 +82,10 @@ export class UsersService {
         return this.userModel.findById(id).populate([{ path: 'settings'}, { path: 'megotchi'}]);
     }
 
-    updateUser(id: string, updateUserDto: UpdateUserDto){
+    updateUser(id: string, {balance, ...updateUserDto}: UpdateUserDto){
+        if(balance){
+            return this.userModel.findByIdAndUpdate(id, {$inc: { balance: balance}}, {new: true});
+        }
         return this.userModel.findByIdAndUpdate(id, updateUserDto, {new: true});
     }
 
@@ -84,5 +99,9 @@ export class UsersService {
         return this.megotchiModel.findByIdAndUpdate(megotchiId, updateMegotchiDto, {new: true})
     }
 
+    async updateUserTasks(id: string, updateUserTasksDto: UpdateUserTasksDto) {
+        const { taskList } = updateUserTasksDto;
+        return await this.userModel.findByIdAndUpdate(id, { $push: { tasklist: { $each: taskList } } }, { new: true, runValidators: true });
+    }
 
 }

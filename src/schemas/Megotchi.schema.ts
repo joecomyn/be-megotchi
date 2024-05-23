@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-@Schema({versionKey: false})
+@Schema({versionKey: false, validateBeforeSave: true})
 export class Megotchi {
     
     @Prop({required: true})
