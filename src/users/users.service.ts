@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from "src/schemas/User.schema";
 import { CreateUserDto } from './dto/User.dto';
 import { UpdateUserDto } from "./dto/UpdateUser.dto";
@@ -99,9 +99,13 @@ export class UsersService {
         return this.megotchiModel.findByIdAndUpdate(megotchiId, updateMegotchiDto, {new: true})
     }
 
-    async updateUserTasks(id: string, updateUserTasksDto: UpdateUserTasksDto) {
+    updateUserTasks(id: string, {isDelete, ...updateUserTasksDto}: UpdateUserTasksDto) {
         const { taskList } = updateUserTasksDto;
-        return await this.userModel.findByIdAndUpdate(id, { $push: { tasklist: { $each: taskList } } }, { new: true, runValidators: true });
+        if(isDelete){
+            const taskIds = taskList.map(task => new Types.ObjectId(task._id));
+            return this.userModel.findByIdAndUpdate(id, { $pull: { tasklist: { _id: { $in: taskIds } } } },{ new: true, runValidators: true });
+        }
+        return this.userModel.findByIdAndUpdate(id, { $push: { tasklist: { $each: taskList } } }, { new: true, runValidators: true });
     }
 
 }
