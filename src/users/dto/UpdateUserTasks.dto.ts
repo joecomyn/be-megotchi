@@ -19,6 +19,10 @@ export class UpdateUserTaskDto {
 
     @IsNotEmpty()
     @IsString()
+    _id: string;
+
+    @IsNotEmpty()
+    @IsString()
     title: string;
 
     @IsNotEmpty()
