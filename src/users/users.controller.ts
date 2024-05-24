@@ -28,8 +28,13 @@ async signInUser(@Body() userCredentials: { email: string, password: string}){
 
     if(foundUser.length > 0){
 
-        const {email, password, ...returnUser} = foundUser[0];
-        return returnUser;
+        const returnUser = {
+            displayName: foundUser[0].displayName,
+            _id: foundUser[0]._id,
+            megotchi: foundUser[0].megotchi,
+            taskList: foundUser[0].tasklist,
+            balance: foundUser[0].balance
+        }
         return returnUser;
     }
     else{
@@ -49,12 +54,20 @@ async updateUserTasks(@Param('id') id: string, @Body() updateUserTasksDto: Updat
 
 @Get(':id')
 async getUserById(@Param('id') id: string){
+
     const isValid = mongoose.Types.ObjectId.isValid(id)
-    if (!isValid) throw new HttpException('User not found', 404)
-        const foundUser = await this.userService.getUserById(id)
-    if(!foundUser) throw new HttpException('User not found', 404)
-        const {email, password, ...returnUser} = foundUser;
-        return returnUser;
+    if (!isValid) throw new HttpException('User not found', 404);
+    
+    const foundUser = await this.userService.getUserById(id);
+    if(!foundUser) throw new HttpException('User not found', 404);
+    const returnUser = {
+        displayName: foundUser.displayName,
+        _id: foundUser._id,
+        megotchi: foundUser.megotchi,
+        taskList: foundUser.tasklist,
+        balance: foundUser[0].balance
+    }
+    return returnUser;
 }
 
 @Patch(':id')
