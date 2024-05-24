@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from 'class-transformer';
 
 export class UpdateUserTasksDto{
@@ -17,7 +17,7 @@ export class UpdateUserTasksDto{
 
 export class UpdateUserTaskDto {
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     _id: string;
 
