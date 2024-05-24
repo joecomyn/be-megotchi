@@ -11,6 +11,9 @@ export class Task {
 
     @Prop({ required: true })
     iconUrl: string;
+
+    @Prop({ required: true })
+    message: string;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task)
