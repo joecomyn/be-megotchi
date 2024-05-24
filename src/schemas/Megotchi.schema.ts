@@ -3,7 +3,10 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 @Schema({versionKey: false, validateBeforeSave: true})
 export class Megotchi {
     
-    @Prop({required: true})
+    @Prop({ required: true })
+    name: string;
+    
+    @Prop({ required: true })
     color: string;
 }
 

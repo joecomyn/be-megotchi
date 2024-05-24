@@ -1,6 +1,10 @@
-import { IsHexColor, IsOptional } from 'class-validator';
+import { IsHexColor, IsOptional, IsString } from 'class-validator';
 
 export class UpdateMegotchiDto {
+
+    @IsOptional()
+    @IsString()
+    name: string;
 
     @IsOptional()
     @IsHexColor()
