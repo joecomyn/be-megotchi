@@ -1,30 +1,35 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
-import { Expose, Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { Type } from 'class-transformer';
 
 export class UpdateUserTasksDto{
     
+    @IsNotEmpty()
+    @IsBoolean()
+    isDelete: boolean;
+
     @IsNotEmpty()
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => UpdateUserTaskDto)
     taskList: UpdateUserTaskDto[];
+
 }
 
 export class UpdateUserTaskDto {
 
     @IsNotEmpty()
     @IsString()
-    @Expose()
+    _id: string;
+    @IsNotEmpty()
+    @IsString()
     title: string;
 
     @IsNotEmpty()
     @IsString()
-    @Expose()
     body: string;
 
     @IsNotEmpty()
     @IsString()
-    @Expose()
     iconUrl: string;
 
 }
