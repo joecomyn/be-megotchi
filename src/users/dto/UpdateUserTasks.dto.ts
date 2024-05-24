@@ -19,9 +19,6 @@ export class UpdateUserTaskDto {
 
     @IsNotEmpty()
     @IsString()
-    _id: string;
-    @IsNotEmpty()
-    @IsString()
     title: string;
 
     @IsNotEmpty()
@@ -31,5 +28,9 @@ export class UpdateUserTaskDto {
     @IsNotEmpty()
     @IsString()
     iconUrl: string;
+
+    @IsNotEmpty()
+    @IsString()
+    message: string;
 
 }
