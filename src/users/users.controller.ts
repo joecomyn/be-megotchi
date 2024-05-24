@@ -28,11 +28,8 @@ async signInUser(@Body() userCredentials: { email: string, password: string}){
 
     if(foundUser.length > 0){
 
-        const returnUser = {
-            displayName: foundUser[0].displayName,
-            _id: foundUser[0]._id,
-            megotchi: foundUser[0].megotchi
-        }
+        const {email, password, ...returnUser} = foundUser[0];
+        return returnUser;
         return returnUser;
     }
     else{
@@ -54,9 +51,10 @@ async updateUserTasks(@Param('id') id: string, @Body() updateUserTasksDto: Updat
 async getUserById(@Param('id') id: string){
     const isValid = mongoose.Types.ObjectId.isValid(id)
     if (!isValid) throw new HttpException('User not found', 404)
-        const findUser = await this.userService.getUserById(id)
-    if(!findUser) throw new HttpException('User not found', 404)
-        return findUser;
+        const foundUser = await this.userService.getUserById(id)
+    if(!foundUser) throw new HttpException('User not found', 404)
+        const {email, password, ...returnUser} = foundUser;
+        return returnUser;
 }
 
 @Patch(':id')
