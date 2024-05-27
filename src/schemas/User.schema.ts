@@ -19,7 +19,7 @@ export class User {
     megotchi: Megotchi;
 
     @Prop({ required: true, type: [TaskSchema]})
-    tasklist: Task[];
+    taskList: Task[];
 
     @Prop({ required: true })
     balance: number;

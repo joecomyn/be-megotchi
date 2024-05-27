@@ -29,7 +29,7 @@ export class UsersService {
             const newUser = new this.userModel({
                 ...createUserDto,
                 megotchi: savedNewMegotchi._id,
-                tasklist: [],
+                taskList: [],
                 balance: 0,
                 settings: savedNewSettings._id,
             });
