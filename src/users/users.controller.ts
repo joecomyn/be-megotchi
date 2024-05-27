@@ -12,13 +12,18 @@ export class UsersController {
 
 @Post()
 @UsePipes(new ValidationPipe())
-createUser(@Body() createUserDto: CreateUserDto){
-    return this.userService.createUser(createUserDto)
+async createUser(@Body() createUserDto: CreateUserDto){
+    const {email, password, ...createdUser} = await this.userService.createUser(createUserDto);
+    return createdUser;
 }
 
 @Get()
-getUsers(){
-    return this.userService.getUsers()
+async getUsers(){
+    const returnedUsers = await this.userService.getUsers();
+    return returnedUsers.map((user) => {
+        const {email, password, ...strippedUser} = user;
+        return strippedUser;
+    })
 }
 
 @Post('/signin')
@@ -28,13 +33,7 @@ async signInUser(@Body() userCredentials: { email: string, password: string}){
 
     if(foundUser.length > 0){
 
-        const returnUser = {
-            displayName: foundUser[0].displayName,
-            _id: foundUser[0]._id,
-            megotchi: foundUser[0].megotchi,
-            taskList: foundUser[0].tasklist,
-            balance: foundUser[0].balance
-        }
+        const {email, password, ...returnUser} = foundUser[0];
         return returnUser;
     }
     else{
@@ -49,24 +48,17 @@ async updateUserTasks(@Param('id') id: string, @Body() updateUserTasksDto: Updat
     if (!isValid) throw new HttpException('Invalid ID', 400);
     const updatedUser = await this.userService.updateUserTasks(id, updateUserTasksDto);
     if(!updatedUser) throw new HttpException('User Not Found', 404);
-    return updatedUser;
+    const {email, password,...returnUser} =  updatedUser;
+    return returnUser;
 }
 
 @Get(':id')
 async getUserById(@Param('id') id: string){
-
     const isValid = mongoose.Types.ObjectId.isValid(id)
     if (!isValid) throw new HttpException('User not found', 404);
-    
     const foundUser = await this.userService.getUserById(id);
     if(!foundUser) throw new HttpException('User not found', 404);
-    const returnUser = {
-        displayName: foundUser.displayName,
-        _id: foundUser._id,
-        megotchi: foundUser.megotchi,
-        taskList: foundUser.tasklist,
-        balance: foundUser[0].balance
-    }
+    const {email, password,...returnUser} =  foundUser;
     return returnUser;
 }
 
@@ -75,9 +67,10 @@ async getUserById(@Param('id') id: string){
 async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto){
     const isValid = mongoose.Types.ObjectId.isValid(id)
     if (!isValid) throw new HttpException('Invalid ID', 400);
-    const updateUser = await this.userService.updateUser(id, updateUserDto)
-    if(!updateUser) throw new HttpException('User Not Found', 404)
-    return updateUser
+    const updatedUser = await this.userService.updateUser(id, updateUserDto)
+    if(!updatedUser) throw new HttpException('User Not Found', 404)
+    const {email, password,...returnUser} =  updatedUser;
+    return returnUser;
 }
 
 @Delete(':id')
