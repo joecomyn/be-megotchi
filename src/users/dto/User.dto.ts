@@ -18,6 +18,7 @@ export class CreateUserSettingsDto {
 }
 
 export class CreateUserDto {
+    
     @IsString()
     @IsNotEmpty()
     displayName?: string;

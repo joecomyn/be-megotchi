@@ -33,23 +33,14 @@ export class UsersService {
                 balance: 0,
                 settings: savedNewSettings._id,
             });
-            
+            let savedNewUser;
             try {
                 await newUser.save() 
             } catch (error) {
                 await this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
                 return error;
             }
-            
-            const returnUser = await newUser.populate([{ path: 'settings'}, { path: 'megotchi'}]);
-            return {
-                displayName: returnUser.displayName,
-                _id: returnUser._id,
-                megotchi: returnUser.megotchi,
-                tasklist: returnUser.tasklist,
-                balance: returnUser.balance,
-                settings: returnUser.settings,
-            }
+            return await this.userModel.findById(savedNewUser._id).populate([{ path: 'settings'}, { path: 'megotchi'}]).lean();
         }
 
         const newUser = new this.userModel({
@@ -57,36 +48,40 @@ export class UsersService {
             megotchi: savedNewMegotchi._id,
             taskList: [],
             balance: 0,
-        });
+        })
+        let savedNewUser;
         try {
-            await newUser.save() 
+            savedNewUser = await newUser.save() 
         } catch (error) {
             await this.megotchiModel.findByIdAndDelete(savedNewMegotchi._id);
             return error;
         }
-        const returnUser = await newUser.populate({ path: 'megotchi'});
-        return {
-            displayName: returnUser.displayName,
-            _id: returnUser._id,
-            megotchi:returnUser.megotchi,
-            tasklist: returnUser.tasklist,
-            balance: returnUser.balance,
-        }
+        return await this.userModel.findById(savedNewUser._id).populate({ path: 'megotchi'}).lean();
     }
 
-    getUsers(){
-        return this.userModel.find().populate([{ path: 'settings'}, { path: 'megotchi'}]);
+    async getUsers(){
+        return await this.userModel.find().populate([{ path: 'settings'}, { path: 'megotchi'}]).lean();
     }
 
-    getUserById(id: string){
-        return this.userModel.findById(id).populate([{ path: 'settings'}, { path: 'megotchi'}]);
+    async getUserById(id: string){
+        return await this.userModel.findById(id).populate([{ path: 'settings'}, { path: 'megotchi'}]).lean();
     }
 
-    updateUser(id: string, {balance, ...updateUserDto}: UpdateUserDto){
+    async updateUser(id: string, {balance, ...updateUserDto}: UpdateUserDto){
         if(balance){
-            return this.userModel.findByIdAndUpdate(id, {$inc: { balance: balance}}, {new: true});
+            return this.userModel.findByIdAndUpdate(
+                id, 
+                {$inc: { balance: balance}}, 
+                {new: true, runValidators: true })
+                .populate([{ path: 'settings'}, { path: 'megotchi'}])
+                .lean();
         }
-        return this.userModel.findByIdAndUpdate(id, updateUserDto, {new: true});
+        return this.userModel.findByIdAndUpdate(
+            id, 
+            updateUserDto, 
+            {new: true, runValidators: true })
+            .populate([{ path: 'settings'}, 
+            { path: 'megotchi'}]).lean();
     }
 
     deleteUser(id: string,) {
@@ -99,13 +94,23 @@ export class UsersService {
         return this.megotchiModel.findByIdAndUpdate(megotchiId, updateMegotchiDto, {new: true})
     }
 
-    updateUserTasks(id: string, {isDelete, ...updateUserTasksDto}: UpdateUserTasksDto) {
+    async updateUserTasks(id: string, {isDelete, ...updateUserTasksDto}: UpdateUserTasksDto) {
         const { taskList } = updateUserTasksDto;
         if(isDelete){
             const taskIds = taskList.map(task => new Types.ObjectId(task._id));
-            return this.userModel.findByIdAndUpdate(id, { $pull: { tasklist: { _id: { $in: taskIds } } } },{ new: true, runValidators: true });
+            return this.userModel.findByIdAndUpdate(id, 
+                { $pull: { tasklist: { _id: { $in: taskIds } } } },
+                { new: true, runValidators: true })
+            .populate([{ path: 'settings'}, { path: 'megotchi'}])
+            .lean();
         }
-        return this.userModel.findByIdAndUpdate(id, { $push: { tasklist: { $each: taskList } } }, { new: true, runValidators: true });
+
+        return this.userModel.findByIdAndUpdate(
+            id, 
+            { $push: { tasklist: { $each: taskList } } }, 
+            { new: true, runValidators: true })
+        .populate([{ path: 'settings'}, { path: 'megotchi'}])
+        .lean();
     }
 
 }
