@@ -98,16 +98,16 @@ export class UsersService {
         const { taskList } = updateUserTasksDto;
         if(isDelete){
             const taskIds = taskList.map(task => new Types.ObjectId(task._id));
-            return this.userModel.findByIdAndUpdate(id, 
-                { $pull: { tasklist: { _id: { $in: taskIds } } } },
+            return await this.userModel.findByIdAndUpdate(id, 
+                { $pull: { taskList: { _id: { $in: taskIds } } } },
                 { new: true, runValidators: true })
             .populate([{ path: 'settings'}, { path: 'megotchi'}])
             .lean();
         }
 
-        return this.userModel.findByIdAndUpdate(
+        return await this.userModel.findByIdAndUpdate(
             id, 
-            { $push: { tasklist: { $each: taskList } } }, 
+            { $push: { taskList: { $each: taskList } } }, 
             { new: true, runValidators: true })
         .populate([{ path: 'settings'}, { path: 'megotchi'}])
         .lean();

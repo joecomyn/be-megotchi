@@ -48,7 +48,7 @@ async updateUserTasks(@Param('id') id: string, @Body() updateUserTasksDto: Updat
     if (!isValid) throw new HttpException('Invalid ID', 400);
     const updatedUser = await this.userService.updateUserTasks(id, updateUserTasksDto);
     if(!updatedUser) throw new HttpException('User Not Found', 404);
-    const {email, password,...returnUser} =  updatedUser;
+    const {email, password, ...returnUser} =  updatedUser;
     return returnUser;
 }
 
