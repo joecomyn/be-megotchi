@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from 'mongoose';
-import { User } from "src/schemas/User.schema";
+import { User } from "../schemas/User.schema";
 import { CreateUserDto } from './dto/User.dto';
 import { UpdateUserDto } from "./dto/UpdateUser.dto";
-import { UserSettings } from "src/schemas/UserSettings.schema";
-import { Megotchi } from "src/schemas/Megotchi.schema";
+import { UserSettings } from "../schemas/UserSettings.schema";
+import { Megotchi } from "../schemas/Megotchi.schema";
 import { UpdateMegotchiDto } from "./dto/UpdateMegotchi.dto";
 import { UpdateUserTasksDto } from "./dto/UpdateUserTasks.dto";
 
