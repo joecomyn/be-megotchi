@@ -28,7 +28,7 @@
 
 ## Hosted version
 
-You can check out a hosted version of the API [here](https://github.com/joecomyn/be-megotchi.git)
+You can check out a hosted version of the API [here](https://megotchi-api.onrender.com/)
 
 ## Installation
 
