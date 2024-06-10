@@ -26,6 +26,10 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Hosted version
+
+You can check out a hosted version of the API [here](https://github.com/joecomyn/be-megotchi.git)
+
 ## Installation
 
 ```bash
